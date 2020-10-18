@@ -1,8 +1,24 @@
-import React from 'react';
+import React , {useState , useEffect} from 'react';
 import './App.css';
 import Post from './Post';
+import {db} from './Firebase';
 
 function App() {
+
+  const [posts , setPosts] = useState([]);
+
+  //useEffect -> Runs a piece of code on a specific condition
+
+  useEffect(() => {
+    db.collection('posts').onSnapshot(snapshot => {
+      //every time new post added, th is code works
+      setPosts(snapshot.docs.map(doc => ({
+        id : doc.id,
+        post : doc.data()
+      })));
+    })
+  }, []);
+
   return (
     <div className="App">
 
@@ -13,13 +29,15 @@ function App() {
       />
     </div>
     <h1>Hello we can start building instagram clone usinig React app</h1>
-    <Post username ="nabeel_kmvkd" caption = "how nice things in2020" imageUrl = "https://www.freecodecamp.org/news/content/images/2020/02/Ekran-Resmi-2019-11-18-18.08.13.png" />
-    <Post username ="u_akshay" caption = "its cousin days" imageUrl ="https://upload.wikimedia.org/wikipedia/commons/thumb/6/6a/JavaScript-logo.png/240px-JavaScript-logo.png"/>
-    <Post username ="jithin_km" caption = "all ofr goood" imageUrl ="https://www.surrealcms.com/uploads/nodejs-logo.png" />
-    <Post />
 
-    {/* post list
-    post list */}
+    {
+      posts.map(({id , post }) => {
+        return(
+          <Post key ={id} username = {post.username} caption = {post.caption} imageUrl = {post.imageUrl} />
+        )
+      })
+    }
+    
     </div>
   );
 }
